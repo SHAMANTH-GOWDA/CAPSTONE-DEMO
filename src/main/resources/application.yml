@@ -2,16 +2,16 @@ spring:
   application:
     name: capstone1-secure-auth-resilience
 
-
 resilience4j:
   circuitbreaker:
+    circuit-breaker-aspect-order: 1
     configs:
       default:
         registerHealthIndicator: true
         slidingWindowSize: 5
-        minimumNumberOfCalls: 3
-        permittedNumberOfCallsInHalfOpenState: 2
-        waitDurationInOpenState: 3s
+        minimumNumberOfCalls: 2
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 5s
         failureRateThreshold: 50
     instances:
       mockExternalService:
@@ -22,14 +22,12 @@ resilience4j:
   #        waitDurationInOpenState: 10s
 
   ratelimiter:
-    configs:
-      default:
-       limitForPeriod: 2
-       limitRefreshPeriod: 20s
-       timeoutDuration: 0s
+    rate-limiter-aspect-order: 2
     instances:
-      LoginRateLimiter:
-        baseConfig: default
+      loginRateLimiter:
+        limitRefreshPeriod: 1s
+        limitForPeriod: 2
+        timeoutDuration: 1s
 
 
 management:

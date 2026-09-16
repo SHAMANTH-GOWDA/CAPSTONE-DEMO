@@ -4,11 +4,14 @@ import com.capstone.auth.dto.request.LoginRequest;
 import com.capstone.auth.dto.response.AuthValidationResponse;
 import com.capstone.auth.dto.response.LoginResponse;
 import com.capstone.auth.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api")
+@Tag(name = "Authentication API")
 public class AuthController {
 
     private final AuthService authService;
@@ -28,7 +31,7 @@ public class AuthController {
     }
 
     // Validate JWT authentication
-    @GetMapping("/auth")
+    @GetMapping("auth")
     public ResponseEntity<AuthValidationResponse> validate(
             @RequestHeader("Authorization") String authorizationHeader) {
 
@@ -39,7 +42,7 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    // Logout / revoke JWT
+    // Logout
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @RequestHeader("Authorization") String authorizationHeader) {

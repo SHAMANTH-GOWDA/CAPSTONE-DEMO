@@ -8,11 +8,13 @@ import com.capstone.auth.exception.InvalidTokenException;
 import com.capstone.auth.exception.TokenExpiredException;
 import com.capstone.auth.model.TokenMetadata;
 import com.capstone.auth.model.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private static final User DEFAULT_USER =
@@ -20,14 +22,6 @@ public class AuthServiceImpl implements AuthService {
 
     private final JwtService jwtService;
     private final TokenStoreService tokenStoreService;
-
-    public AuthServiceImpl(
-            JwtService jwtService,
-            TokenStoreService tokenStoreService
-    ) {
-        this.jwtService = jwtService;
-        this.tokenStoreService = tokenStoreService;
-    }
 
     @Override
     public LoginResponse authenticate(LoginRequest loginRequest) {

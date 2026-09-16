@@ -31,7 +31,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         String clientIp = request.getRemoteAddr();
 
         logger.info(
-                "REQUEST  | method={} | uri={} | clientIp={}",
+                "REQUEST | method={} | uri={} | clientIp={}",
                 method,
                 uri,
                 clientIp

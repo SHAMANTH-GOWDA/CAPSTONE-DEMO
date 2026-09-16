@@ -6,6 +6,7 @@ import com.capstone.auth.dto.request.SignupRequest;
 import com.capstone.auth.dto.response.AuthValidationResponse;
 import com.capstone.auth.dto.response.LoginResponse;
 import com.capstone.auth.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequestMapping("/api")
+@Tag(name = "Authentication API")
 public class AuthController {
 
     private final AuthService authService;
@@ -21,36 +24,17 @@ public class AuthController {
         this.authService = authService;
     }
 
+    // Login
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody LoginRequest loginRequest) {
 
-        return ResponseEntity.ok(
-                authService.authenticate(loginRequest)
-        );
+        LoginResponse response = authService.authenticate(loginRequest);
+
+        return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/signup")
-    public ResponseEntity<String> signup(
-            @RequestBody SignupRequest signupRequest
-    ) {
-        authService.signup(signupRequest);
-
-        return ResponseEntity.ok(
-                "User registered successfully"
-        );
-    }
-
-
-    @PostMapping("/refresh")
-    public LoginResponse refresh(
-            @RequestBody RefreshTokenRequest request
-    ) {
-        return authService.refreshAccessToken(
-                request.getRefreshToken()
-        );
-    }
-
+    // Validate JWT authentication
     @GetMapping("/auth")
     public ResponseEntity<AuthValidationResponse> validate(
             HttpServletRequest request) {
@@ -69,6 +53,7 @@ public class AuthController {
         );
     }
 
+    // Logout
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             HttpServletRequest request) {

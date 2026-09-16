@@ -69,7 +69,6 @@ public class SecurityConfig {
             throws Exception {
 
         http
-                // Disable CSRF because this is a stateless REST API
                 .csrf(csrf -> csrf.disable())
 
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))

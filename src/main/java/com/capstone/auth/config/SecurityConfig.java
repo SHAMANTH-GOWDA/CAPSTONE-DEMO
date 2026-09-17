@@ -1,6 +1,7 @@
 package com.capstone.auth.config;
 
 import com.capstone.auth.security.JwtAuthenticationFilter;
+import com.capstone.auth.security.RateLimiterFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimiterFilter rateLimiterFilter;
 
 
     @Bean
@@ -26,12 +28,12 @@ public class SecurityConfig {
             throws Exception {
 
         http
+                // Disable CSRF because this is a stateless REST API
                 .csrf(csrf -> csrf.disable())
 
+                // JWT authentication does not use HTTP sessions
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS
-                        )
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
                 .authorizeHttpRequests(auth -> auth
@@ -57,6 +59,9 @@ public class SecurityConfig {
 
                 .logout(logout -> logout.disable())
 
+                .addFilterBefore(rateLimiterFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // Run our JWT filter before Spring's username/password filter
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class

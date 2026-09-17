@@ -4,6 +4,7 @@ import com.capstone.auth.dto.request.LoginRequest;
 import com.capstone.auth.dto.request.SignupRequest;
 import com.capstone.auth.dto.response.AuthValidationResponse;
 import com.capstone.auth.dto.response.LoginResponse;
+import org.springframework.http.ResponseEntity;
 
 import com.capstone.auth.dto.request.SignupRequest;
 

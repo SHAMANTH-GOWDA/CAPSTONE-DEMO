@@ -23,10 +23,6 @@ public class RateLimiterFilter implements Filter {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
 
-        if("OPTIONS".equals(httpServletRequest.getMethod())) {
-            chain.doFilter(request, response);
-            return;
-        }
         String ipAddress = httpServletRequest.getRemoteAddr();
 
 

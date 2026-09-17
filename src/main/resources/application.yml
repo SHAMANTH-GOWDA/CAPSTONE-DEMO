@@ -4,14 +4,14 @@ spring:
 
 resilience4j:
   circuitbreaker:
-    circuit-breaker-aspect-order: 1
+    circuit-breaker-aspect-order: 2
     configs:
       default:
         registerHealthIndicator: true
         slidingWindowSize: 5
-        minimumNumberOfCalls: 2
-        permittedNumberOfCallsInHalfOpenState: 3
-        waitDurationInOpenState: 5s
+        minimumNumberOfCalls: 3
+        permittedNumberOfCallsInHalfOpenState: 2
+        waitDurationInOpenState: 3s
         failureRateThreshold: 50
     instances:
       mockExternalService:
@@ -22,11 +22,11 @@ resilience4j:
   #        waitDurationInOpenState: 10s
 
   ratelimiter:
-    rate-limiter-aspect-order: 2
+    rate-limiter-aspect-order: 1
     instances:
-      loginRateLimiter:
-        limitRefreshPeriod: 1s
-        limitForPeriod: 2
+      LoginRateLimiter:
+        limitForPeriod: 5
+        limitRefreshPeriod: 10s
         timeoutDuration: 1s
 
 

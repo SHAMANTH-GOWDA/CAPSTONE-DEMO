@@ -42,8 +42,9 @@ public class AuthServiceImpl implements AuthService {
         this.refreshTokenService = refreshTokenService;
     }
 
+
     @Override
-    public LoginResponse authenticate(LoginRequest loginRequest) {
+    public LoginResponse authenticate(LoginRequest loginRequest) throws InterruptedException {
 
         String username = loginRequest.getUsername()
                 .trim()

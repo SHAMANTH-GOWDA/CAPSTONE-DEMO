@@ -23,7 +23,7 @@ public class AuthController {
     // Login
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
-            @Valid @RequestBody LoginRequest loginRequest) {
+            @Valid @RequestBody LoginRequest loginRequest) throws InterruptedException {
 
         LoginResponse response = authService.authenticate(loginRequest);
 

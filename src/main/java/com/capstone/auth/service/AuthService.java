@@ -6,7 +6,7 @@ import com.capstone.auth.dto.response.LoginResponse;
 
 public interface AuthService {
 
-    LoginResponse authenticate(LoginRequest loginRequest);
+    LoginResponse authenticate(LoginRequest loginRequest) throws InterruptedException;
 
     AuthValidationResponse validate(String token);
 

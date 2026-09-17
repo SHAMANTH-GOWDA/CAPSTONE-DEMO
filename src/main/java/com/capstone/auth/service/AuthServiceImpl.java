@@ -23,8 +23,9 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final TokenStoreService tokenStoreService;
 
+
     @Override
-    public LoginResponse authenticate(LoginRequest loginRequest) {
+    public LoginResponse authenticate(LoginRequest loginRequest) throws InterruptedException {
 
         if (!DEFAULT_USER.getUsername().equals(loginRequest.getUsername())
                 || !DEFAULT_USER.getPassword().equals(loginRequest.getPassword())) {

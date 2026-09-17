@@ -20,6 +20,7 @@ spring:
 
 resilience4j:
   circuitbreaker:
+    circuit-breaker-aspect-order: 1
     configs:
       default:
         registerHealthIndicator: true

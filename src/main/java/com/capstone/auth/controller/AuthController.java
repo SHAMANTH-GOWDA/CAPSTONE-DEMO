@@ -33,7 +33,7 @@ public class AuthController {
     @PostMapping("/login")
     @RateLimiter(name = RateLimiter , fallbackMethod = "LoginFallBack")
     public ResponseEntity<LoginResponse> login(
-            @Valid @RequestBody LoginRequest loginRequest) {
+            @Valid @RequestBody LoginRequest loginRequest) throws InterruptedException {
 
         LoginResponse response = authService.authenticate(loginRequest);
 

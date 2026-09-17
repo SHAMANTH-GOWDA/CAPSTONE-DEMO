@@ -3,6 +3,7 @@ package com.capstone.auth.service;
 import com.capstone.auth.dto.request.LoginRequest;
 import com.capstone.auth.dto.response.AuthValidationResponse;
 import com.capstone.auth.dto.response.LoginResponse;
+import org.springframework.http.ResponseEntity;
 
 public interface AuthService {
 

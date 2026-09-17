@@ -9,6 +9,8 @@ import com.capstone.auth.exception.TokenExpiredException;
 import com.capstone.auth.model.TokenMetadata;
 import com.capstone.auth.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -46,6 +48,7 @@ public class AuthServiceImpl implements AuthService {
         );
 
         tokenStoreService.storeToken(tokenMetadata);
+
 
         return new LoginResponse(
                 token,

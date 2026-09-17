@@ -2,6 +2,7 @@ spring:
   application:
     name: capstone1-secure-auth-resilience
 
+
 resilience4j:
   circuitbreaker:
     circuit-breaker-aspect-order: 2
@@ -23,11 +24,14 @@ resilience4j:
 
   ratelimiter:
     rate-limiter-aspect-order: 1
+    configs:
+      default:
+       limitForPeriod: 5
+       limitRefreshPeriod: 10s
+       timeoutDuration: 1s
     instances:
       LoginRateLimiter:
-        limitForPeriod: 5
-        limitRefreshPeriod: 10s
-        timeoutDuration: 1s
+        baseConfig: default
 
 
 management:

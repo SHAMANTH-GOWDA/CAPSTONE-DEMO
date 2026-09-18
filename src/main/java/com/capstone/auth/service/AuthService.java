@@ -4,13 +4,12 @@ import com.capstone.auth.dto.request.LoginRequest;
 import com.capstone.auth.dto.request.SignupRequest;
 import com.capstone.auth.dto.response.AuthValidationResponse;
 import com.capstone.auth.dto.response.LoginResponse;
-import org.springframework.http.ResponseEntity;
 
 import com.capstone.auth.dto.request.SignupRequest;
 
 public interface AuthService {
 
-    LoginResponse authenticate(LoginRequest loginRequest) throws InterruptedException;
+    LoginResponse authenticate(LoginRequest loginRequest);
 
     AuthValidationResponse validate(String token);
 

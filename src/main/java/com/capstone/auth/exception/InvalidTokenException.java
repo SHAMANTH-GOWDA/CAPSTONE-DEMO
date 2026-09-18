@@ -1,12 +1,8 @@
 package com.capstone.auth.exception;
 
-public class InvalidTokenException extends RuntimeException{
+public class InvalidTokenException extends RuntimeException {
 
-    public InvalidTokenException(String message){
+    public InvalidTokenException(String message) {
         super(message);
-    }
-
-    public InvalidTokenException(String message, Throwable cause) {
-        super(message, cause);
     }
 }

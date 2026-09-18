@@ -16,14 +16,13 @@ public class JwtService {
     private static final String SECRET_KEY =
             "capstone-secure-auth-secret-key-2026-must-be-long-enough";
 
+
     private static final long EXPIRATION_MILLIS = 60 * 60 * 1000L;
 
     private final SecretKey signingKey;
 
     public JwtService() {
-        this.signingKey = Keys.hmacShaKeyFor(
-                SECRET_KEY.getBytes(StandardCharsets.UTF_8)
-        );
+        this.signingKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(String username) {

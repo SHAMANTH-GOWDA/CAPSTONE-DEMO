@@ -5,7 +5,6 @@ spring:
 
 resilience4j:
   circuitbreaker:
-    circuit-breaker-aspect-order: 2
     configs:
       default:
         registerHealthIndicator: true
@@ -23,12 +22,11 @@ resilience4j:
   #        waitDurationInOpenState: 10s
 
   ratelimiter:
-    rate-limiter-aspect-order: 1
     configs:
       default:
-       limitForPeriod: 5
-       limitRefreshPeriod: 10s
-       timeoutDuration: 1s
+       limitForPeriod: 2
+       limitRefreshPeriod: 20s
+       timeoutDuration: 0s
     instances:
       LoginRateLimiter:
         baseConfig: default

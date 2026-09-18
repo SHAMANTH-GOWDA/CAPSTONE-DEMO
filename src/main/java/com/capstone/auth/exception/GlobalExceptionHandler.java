@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.capstone.auth.dto.response.ApiErrorResponse;
@@ -125,4 +126,53 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(error);
     }
+
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    public ResponseEntity<ApiErrorResponse> handleMissingRequestHeader(
+            MissingRequestHeaderException ex) {
+
+        logger.error(
+                "EXCEPTION | type={} | message={}",
+                ex.getClass().getSimpleName(),
+                ex.getMessage(),
+                ex
+        );
+
+        ApiErrorResponse error = new ApiErrorResponse("Missing Request Header");
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(error);
+    }
+
+    @ExceptionHandler(IllegalAccessError.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(IllegalAccessError ex) {
+        logger.error(
+                "EXCEPTION | type={} | message={}",
+                ex.getClass().getSimpleName(),
+                ex.getMessage(),
+                ex
+        );
+
+        ApiErrorResponse error = new ApiErrorResponse("An unexpected error occurred");
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(error);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleGenericException(IllegalArgumentException ex) {
+        logger.error(
+                "EXCEPTION | type={} | message={}",
+                ex.getClass().getSimpleName(),
+                ex.getMessage(),
+                ex
+        );
+
+        ApiErrorResponse error = new ApiErrorResponse(ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
+    }
+
 }

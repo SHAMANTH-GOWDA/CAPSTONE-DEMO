@@ -9,8 +9,6 @@ import com.capstone.auth.exception.TokenExpiredException;
 import com.capstone.auth.model.TokenMetadata;
 import com.capstone.auth.model.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -27,7 +25,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public LoginResponse authenticate(LoginRequest loginRequest) throws InterruptedException {
+    public LoginResponse authenticate(LoginRequest loginRequest){
 
         if (!DEFAULT_USER.getUsername().equals(loginRequest.getUsername())
                 || !DEFAULT_USER.getPassword().equals(loginRequest.getPassword())) {
@@ -52,8 +50,8 @@ public class AuthServiceImpl implements AuthService {
 
         return new LoginResponse(
                 token,
-                loginRequest.getUsername(),
-                expiresAt
+                loginRequest.getUsername()
+//                expiresAt
         );
     }
 
@@ -81,7 +79,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void invalidate(String token) {
-
         tokenStoreService.revokeToken(token);
     }
 }

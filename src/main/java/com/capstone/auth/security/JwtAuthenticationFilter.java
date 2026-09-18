@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,18 +17,12 @@ import java.io.IOException;
 import java.util.Collections;
 
 @Component
+@AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final TokenStoreService tokenStoreService;
 
-    public JwtAuthenticationFilter(
-            JwtService jwtService,
-            TokenStoreService tokenStoreService
-    ) {
-        this.jwtService = jwtService;
-        this.tokenStoreService = tokenStoreService;
-    }
 
     @Override
     protected void doFilterInternal(

@@ -14,32 +14,34 @@ import java.util.Date;
 public class JwtService {
 
     private static final String SECRET_KEY =
-            "capstone-secure-auth-secret-key-2026-must-be-long-enough";
+            "capstone-auth-secret-key-for-jwt-security-2025";
 
+    private static final long EXPIRATION_TIME = 60 * 60 * 1000;
 
-    private static final long EXPIRATION_MILLIS = 60 * 60 * 1000L;
+    private final SecretKey key = Keys.hmacShaKeyFor(
+            SECRET_KEY.getBytes(StandardCharsets.UTF_8)
+    );
 
-    private final SecretKey signingKey;
+    public String generateToken(String username, String role) {
 
-    public JwtService() {
-        this.signingKey = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public String generateToken(String username) {
-
-        Instant issuedAt = Instant.now();
-        Instant expiresAt = issuedAt.plusMillis(EXPIRATION_MILLIS);
+        Instant now = Instant.now();
+        Instant expiration = now.plusMillis(EXPIRATION_TIME);
 
         return Jwts.builder()
                 .subject(username)
-                .issuedAt(Date.from(issuedAt))
-                .expiration(Date.from(expiresAt))
-                .signWith(signingKey)
+                .claim("role", role)
+                .issuedAt(Date.from(now))
+                .expiration(Date.from(expiration))
+                .signWith(key)
                 .compact();
     }
 
     public String extractUsername(String token) {
         return extractClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return extractClaims(token).get("role", String.class);
     }
 
     public Instant extractExpiration(String token) {
@@ -49,23 +51,17 @@ public class JwtService {
     }
 
     public boolean isTokenValid(String token) {
-
         try {
-            Claims claims = extractClaims(token);
-
-            return claims.getSubject() != null
-                    && claims.getExpiration() != null
-                    && claims.getExpiration().after(new Date());
-
+            extractClaims(token);
+            return true;
         } catch (Exception exception) {
             return false;
         }
     }
 
     private Claims extractClaims(String token) {
-
         return Jwts.parser()
-                .verifyWith(signingKey)
+                .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

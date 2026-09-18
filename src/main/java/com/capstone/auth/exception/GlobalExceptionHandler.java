@@ -1,178 +1,91 @@
 package com.capstone.auth.exception;
 
-import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.capstone.auth.dto.response.ApiErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import com.capstone.auth.dto.response.ApiErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiErrorResponse> handleValidationException(
+            MethodArgumentNotValidException exception) {
 
+        String message = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse("Invalid request");
 
-    // 503 - External Service Error
-    @ExceptionHandler(ExternalServiceException.class)
-    public ResponseEntity<ApiErrorResponse> handleExternalServiceException(
-            ExternalServiceException exception,
-            HttpServletRequest request) {logger.error(
-                "EXCEPTION | type=ExternalServiceException | method={} | uri={} | message={}",
-                request.getMethod(),
-                request.getRequestURI(),
-                exception.getMessage(),
-                exception
-        );
-
-        ApiErrorResponse error =
-                new ApiErrorResponse(exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(error);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "BAD_REQUEST",
+                        message
+                ));
     }
 
-
-    // 401 - Invalid Credentials
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ApiErrorResponse> handleInvalidCredentialsException(
-            InvalidCredentialsException exception,
-            HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleInvalidCredentials(
+            InvalidCredentialsException exception) {
 
-        logger.warn(
-                "EXCEPTION | type=InvalidCredentialsException | method={} | uri={} | message={}",
-                request.getMethod(),
-                request.getRequestURI(),
-                exception.getMessage()
-        );
-
-        ApiErrorResponse error =
-                new ApiErrorResponse(exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(error);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiErrorResponse(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        "UNAUTHORIZED",
+                        exception.getMessage()
+                ));
     }
 
+    @ExceptionHandler(AccountLockedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccountLocked(
+            AccountLockedException exception) {
 
-    // 401 - Invalid Token
-    @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity<ApiErrorResponse> handleInvalidTokenException(
-            InvalidTokenException exception,
-            HttpServletRequest request) {
-
-        logger.warn(
-                "EXCEPTION | type=InvalidTokenException | method={} | uri={} | message={}",
-                request.getMethod(),
-                request.getRequestURI(),
-                exception.getMessage()
-        );
-
-        ApiErrorResponse error =
-                new ApiErrorResponse(exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(error);
-        
+        return ResponseEntity.status(HttpStatus.LOCKED)
+                .body(new ApiErrorResponse(
+                        HttpStatus.LOCKED.value(),
+                        "ACCOUNT_LOCKED",
+                        exception.getMessage()
+                ));
     }
-    
-    // 401 - Token Expired
+
     @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<ApiErrorResponse> handleTokenExpiredException(
-            TokenExpiredException exception,
-            HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleTokenExpired(
+            TokenExpiredException exception) {
 
-        logger.warn(
-                "EXCEPTION | type=TokenExpiredException | method={} | uri={} | message={}",
-                request.getMethod(),
-                request.getRequestURI(),
-                exception.getMessage()
-        );
-
-        ApiErrorResponse error =
-                new ApiErrorResponse(exception.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(error);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiErrorResponse(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        "TOKEN_EXPIRED",
+                        exception.getMessage()
+                ));
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidToken(
+            InvalidTokenException exception) {
 
-    // 500 - Unexpected Error
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiErrorResponse(
+                        HttpStatus.UNAUTHORIZED.value(),
+                        "INVALID_TOKEN",
+                        exception.getMessage()
+                ));
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleGenericException(
-            Exception exception,
-            HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleGeneralException(
+            Exception exception) {
 
-        logger.error(
-                "EXCEPTION | type={} | method={} | uri={} | message={}",
-                exception.getClass().getSimpleName(),
-                request.getMethod(),
-                request.getRequestURI(),
-                exception.getMessage(),
-                exception
-        );
-
-        ApiErrorResponse error =
-                new ApiErrorResponse("An unexpected error occurred");
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(error);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiErrorResponse(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        "INTERNAL_SERVER_ERROR",
+                        "An unexpected error occurred"
+                ));
     }
-
-
-    @ExceptionHandler(MissingRequestHeaderException.class)
-    public ResponseEntity<ApiErrorResponse> handleMissingRequestHeader(
-            MissingRequestHeaderException ex) {
-
-        logger.error(
-                "EXCEPTION | type={} | message={}",
-                ex.getClass().getSimpleName(),
-                ex.getMessage(),
-                ex
-        );
-
-        ApiErrorResponse error = new ApiErrorResponse("Missing Request Header");
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(error);
-    }
-
-    @ExceptionHandler(IllegalAccessError.class)
-    public ResponseEntity<ApiErrorResponse> handleGenericException(IllegalAccessError ex) {
-        logger.error(
-                "EXCEPTION | type={} | message={}",
-                ex.getClass().getSimpleName(),
-                ex.getMessage(),
-                ex
-        );
-
-        ApiErrorResponse error = new ApiErrorResponse("An unexpected error occurred");
-        return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(error);
-    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ApiErrorResponse> handleGenericException(IllegalArgumentException ex) {
-        logger.error(
-                "EXCEPTION | type={} | message={}",
-                ex.getClass().getSimpleName(),
-                ex.getMessage(),
-                ex
-        );
-
-        ApiErrorResponse error = new ApiErrorResponse(ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(error);
-    }
-
 }

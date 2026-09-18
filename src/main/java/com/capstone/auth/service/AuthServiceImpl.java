@@ -3,55 +3,102 @@ package com.capstone.auth.service;
 import com.capstone.auth.dto.request.LoginRequest;
 import com.capstone.auth.dto.response.AuthValidationResponse;
 import com.capstone.auth.dto.response.LoginResponse;
+import com.capstone.auth.exception.AccountLockedException;
 import com.capstone.auth.exception.InvalidCredentialsException;
 import com.capstone.auth.exception.InvalidTokenException;
 import com.capstone.auth.exception.TokenExpiredException;
 import com.capstone.auth.model.TokenMetadata;
 import com.capstone.auth.model.User;
-import lombok.RequiredArgsConstructor;
+import com.capstone.auth.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 
 @Service
-@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private static final User DEFAULT_USER =
-            new User("admin", "password123");
+    private static final int MAX_FAILED_ATTEMPTS = 5;
 
+    private final UserRepository userRepository;
     private final JwtService jwtService;
     private final TokenStoreService tokenStoreService;
+    private final PasswordEncoder passwordEncoder;
 
+    public AuthServiceImpl(
+            UserRepository userRepository,
+            JwtService jwtService,
+            TokenStoreService tokenStoreService,
+            PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.tokenStoreService = tokenStoreService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
-    public LoginResponse authenticate(LoginRequest loginRequest){
+    public LoginResponse authenticate(LoginRequest loginRequest) {
 
-        if (!DEFAULT_USER.getUsername().equals(loginRequest.getUsername())
-                || !DEFAULT_USER.getPassword().equals(loginRequest.getPassword())) {
+        String username = loginRequest.getUsername()
+                .trim()
+                .toLowerCase();
 
-            throw new InvalidCredentialsException("Invalid username or password");
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() ->
+                        new InvalidCredentialsException(
+                                "Invalid username or password"
+                        )
+                );
+
+        if (user.isLocked()) {
+            throw new AccountLockedException(
+                    "Account is locked due to too many failed login attempts"
+            );
         }
 
-        String token = jwtService.generateToken(loginRequest.getUsername());
+        if (!passwordEncoder.matches(
+                loginRequest.getPassword(),
+                user.getPassword())) {
+
+            int failedAttempts = user.getFailedLoginAttempts() + 1;
+            user.setFailedLoginAttempts(failedAttempts);
+
+            if (failedAttempts >= MAX_FAILED_ATTEMPTS) {
+                user.setLocked(true);
+            }
+
+            userRepository.save(user);
+
+            throw new InvalidCredentialsException(
+                    "Invalid username or password"
+            );
+        }
+
+        user.setFailedLoginAttempts(0);
+        userRepository.save(user);
+
+        String token = jwtService.generateToken(
+                user.getUsername(),
+                user.getRole()
+        );
 
         Instant issuedAt = Instant.now();
         Instant expiresAt = jwtService.extractExpiration(token);
 
         TokenMetadata tokenMetadata = new TokenMetadata(
                 token,
-                loginRequest.getUsername(),
+                user.getUsername(),
                 issuedAt,
                 expiresAt
         );
 
         tokenStoreService.storeToken(tokenMetadata);
 
-
         return new LoginResponse(
                 token,
-                loginRequest.getUsername()
-//                expiresAt
+                user.getUsername(),
+                expiresAt
         );
     }
 
@@ -74,7 +121,10 @@ public class AuthServiceImpl implements AuthService {
 
         String username = jwtService.extractUsername(token);
 
-        return new AuthValidationResponse(true, username);
+        return new AuthValidationResponse(
+                true,
+                username
+        );
     }
 
     @Override

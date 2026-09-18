@@ -1,10 +1,5 @@
 package com.capstone.auth.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Setter
-@Getter
 public class AuthValidationResponse {
 
     private boolean authenticated;
@@ -18,4 +13,19 @@ public class AuthValidationResponse {
         this.username = username;
     }
 
+    public boolean isAuthenticated() {
+        return authenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
 }

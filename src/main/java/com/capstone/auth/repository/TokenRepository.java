@@ -4,7 +4,7 @@ import com.capstone.auth.model.TokenMetadata;
 
 import java.util.Optional;
 
-public interface TokenRepository{
+public interface TokenRepository {
 
     void save(TokenMetadata tokenMetadata);
 

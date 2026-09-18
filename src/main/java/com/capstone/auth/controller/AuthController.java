@@ -3,33 +3,22 @@ package com.capstone.auth.controller;
 import com.capstone.auth.dto.request.LoginRequest;
 import com.capstone.auth.dto.response.AuthValidationResponse;
 import com.capstone.auth.dto.response.LoginResponse;
-import com.capstone.auth.exception.InvalidTokenException;
 import com.capstone.auth.service.AuthService;
-import io.github.resilience4j.ratelimiter.RequestNotPermitted;
-import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
-@RequestMapping("/api")
-@RequiredArgsConstructor
-@Tag(name = "Authentication API")
 public class AuthController {
 
     private final AuthService authService;
-    private static final String RateLimiter = "LoginRateLimiter";
 
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/login")
-    @RateLimiter(name = RateLimiter)
     public ResponseEntity<LoginResponse> login(
             @Valid @RequestBody LoginRequest loginRequest) {
 
@@ -46,8 +35,7 @@ public class AuthController {
 
         if (authorization == null
                 || !authorization.startsWith("Bearer ")) {
-
-            throw new InvalidTokenException("Missing or malformed Authorization header");
+            return ResponseEntity.badRequest().build();
         }
 
         String token = authorization.substring(7);
@@ -86,6 +74,4 @@ public class AuthController {
                 "User access successful"
         );
     }
-
-
 }

@@ -1,13 +1,7 @@
 package com.capstone.auth.model;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.Instant;
 
-@Setter
-@Getter
 public class TokenMetadata {
 
     private String token;
@@ -25,4 +19,35 @@ public class TokenMetadata {
         this.expiresAt = expiresAt;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Instant getIssuedAt() {
+        return issuedAt;
+    }
+
+    public void setIssuedAt(Instant issuedAt) {
+        this.issuedAt = issuedAt;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
+    }
 }

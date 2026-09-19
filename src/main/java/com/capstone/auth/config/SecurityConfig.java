@@ -16,7 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.List;
 
 @Configuration
@@ -26,7 +25,6 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RateLimiterFilter rateLimiterFilter;
-
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -71,11 +69,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-                // JWT authentication does not use HTTP sessions
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
                 )
 
                 .authorizeHttpRequests(auth -> auth
@@ -99,7 +96,6 @@ public class SecurityConfig {
                         )
                 )
 
-                // Our AuthController handles POST /logout instead.
                 .logout(logout -> logout.disable())
 
                 .addFilterBefore(rateLimiterFilter, UsernamePasswordAuthenticationFilter.class)

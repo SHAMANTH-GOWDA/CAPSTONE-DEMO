@@ -23,7 +23,7 @@ public class MockExternalService {
         if(Math.random() > 0.5){
             throw new ExternalServiceException("External Service Error");
         }
-        Thread.sleep(2000);
+//        Thread.sleep(2000);
         return new ResponseEntity<>("Login Successful", HttpStatus.OK);
     }
 }

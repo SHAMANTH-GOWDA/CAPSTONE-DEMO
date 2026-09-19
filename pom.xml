@@ -130,6 +130,7 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+
         <!-- Database / JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

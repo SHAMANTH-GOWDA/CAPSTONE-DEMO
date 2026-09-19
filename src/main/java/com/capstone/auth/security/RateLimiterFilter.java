@@ -18,7 +18,6 @@ public class RateLimiterFilter implements Filter {
 
    private final RateLimiterRegistry rateLimiterRegistry;
 
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;

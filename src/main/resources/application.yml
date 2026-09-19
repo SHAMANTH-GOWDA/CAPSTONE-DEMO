@@ -1,7 +1,22 @@
 spring:
   application:
     name: capstone1-secure-auth-resilience
+  datasource:
+    url: jdbc:postgresql://localhost:5432/capstone_auth
+    username: postgres
+    password: admin
+    hikari:
+      connection-timeout: 3000
+      validation-timeout: 1000
+      max-lifetime: 30000
 
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
 resilience4j:
   circuitbreaker:
@@ -13,19 +28,39 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 2
         waitDurationInOpenState: 3s
         failureRateThreshold: 50
+        ignoreExceptions:
+          - com.capstone.auth.exception.InvalidCredentialsException
+          - com.capstone.auth.exception.AccountLockedException
+          - com.capstone.auth.exception.InvalidTokenException
+          - com.capstone.auth.exception.TokenExpiredException
+        recordExceptions:
+          - org.springframework.dao.DataAccessException
+          - java.sql.SQLException
+          - jakarta.persistence.PersistenceException
+          - org.postgresql.util.PSQLException
+          - java.sql.SQLTransientConnectionException
+      service:
+        registerHealthIndicator: true
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        permittedNumberOfCallsInHalfOpenState: 2
+        waitDurationInOpenState: 3s
+        failureRateThreshold: 50
+        recordExceptions:
+          - com.capstone.auth.exception.ExternalServiceException
+
     instances:
-      mockExternalService:
+      dbService:
         baseConfig: default
-  #        slidingWindowSize: 1
-  #        minimumNumberOfCalls: 1
-  #        failureRateThreshold: 50
-  #        waitDurationInOpenState: 10s
+
+      mockExternalService:
+        baseConfig: service
 
   ratelimiter:
     configs:
       default:
-       limitForPeriod: 2
-       limitRefreshPeriod: 20s
+       limitForPeriod: 8
+       limitRefreshPeriod: 30s
        timeoutDuration: 0s
     instances:
       LoginRateLimiter:

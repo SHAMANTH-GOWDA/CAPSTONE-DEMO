@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
         );
 
         ApiErrorResponse error =
-                new ApiErrorResponse(exception.getMessage());
+                new ApiErrorResponse(HttpStatus.UNAUTHORIZED.value(),"Token Expired",exception.getMessage());
 
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
@@ -126,6 +126,25 @@ public class GlobalExceptionHandler {
                 .body(error);
     }
 
+    @ExceptionHandler(AccountLockedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccountLockedException(
+            AccountLockedException exception,
+            HttpServletRequest request
+    ){
+        logger.warn(
+                "EXCEPTION | type=InvalidTokenException | method={} | uri={} | message={}",
+                request.getMethod(),
+                request.getRequestURI(),
+                exception.getMessage()
+        );
+
+        ApiErrorResponse error =
+                new ApiErrorResponse(HttpStatus.LOCKED.value(),"Unauthorized","Account is locked due to too many failed login attempts");
+
+        return ResponseEntity
+                .status(HttpStatus.LOCKED)
+                .body(error);
+    }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ApiErrorResponse> handleMissingRequestHeader(
@@ -138,7 +157,7 @@ public class GlobalExceptionHandler {
                 ex
         );
 
-        ApiErrorResponse error = new ApiErrorResponse("Missing Request Header");
+        ApiErrorResponse error = new ApiErrorResponse(HttpStatus.BAD_REQUEST.value(), "Bad Request","Missing Request Header");
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(error);

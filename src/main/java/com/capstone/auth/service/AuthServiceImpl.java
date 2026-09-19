@@ -60,7 +60,6 @@ public class AuthServiceImpl implements AuthService {
                 );
 
         if (user.isLocked()) {
-
             throw new AccountLockedException(
                     "Account is locked due to too many failed login attempts"
             );

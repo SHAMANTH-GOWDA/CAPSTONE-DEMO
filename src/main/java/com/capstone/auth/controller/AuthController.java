@@ -1,6 +1,8 @@
 package com.capstone.auth.controller;
 
 import com.capstone.auth.dto.request.LoginRequest;
+import com.capstone.auth.dto.request.RefreshTokenRequest;
+import com.capstone.auth.dto.request.SignupRequest;
 import com.capstone.auth.dto.response.AuthValidationResponse;
 import com.capstone.auth.dto.response.LoginResponse;
 import com.capstone.auth.service.AuthService;
@@ -8,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 public class AuthController {
@@ -24,6 +27,27 @@ public class AuthController {
 
         return ResponseEntity.ok(
                 authService.authenticate(loginRequest)
+        );
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup(
+            @RequestBody SignupRequest signupRequest
+    ) {
+        authService.signup(signupRequest);
+
+        return ResponseEntity.ok(
+                "User registered successfully"
+        );
+    }
+
+
+    @PostMapping("/refresh")
+    public LoginResponse refresh(
+            @RequestBody RefreshTokenRequest request
+    ) {
+        return authService.refreshAccessToken(
+                request.getRefreshToken()
         );
     }
 

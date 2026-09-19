@@ -64,7 +64,7 @@ public class AuthServiceImpl implements AuthService {
             );
         }
 
-        // Check password
+
         if (!passwordEncoder.matches(
                 loginRequest.getPassword(),
                 user.getPassword()
@@ -86,29 +86,23 @@ public class AuthServiceImpl implements AuthService {
             );
         }
 
-        // Successful login
+
         user.setFailedLoginAttempts(0);
         userRepository.save(user);
 
-        // ==============================
-        // GENERATE ACCESS TOKEN
-        // ==============================
 
         String accessToken = jwtService.generateToken(
                 user.getUsername(),
                 user.getRole()
         );
 
-        // When the access token was issued
+
         Instant issuedAt = Instant.now();
 
-        // When the access token will expire
+
         Instant expiresAt =
                 jwtService.extractExpiration(accessToken);
 
-        // ==============================
-        // STORE ACCESS TOKEN
-        // ==============================
 
         TokenMetadata tokenMetadata = new TokenMetadata(
                 accessToken,
@@ -119,18 +113,13 @@ public class AuthServiceImpl implements AuthService {
 
         tokenStoreService.storeToken(tokenMetadata);
 
-        // ==============================
-        // GENERATE REFRESH TOKEN
-        // ==============================
 
         RefreshToken refreshToken =
                 refreshTokenService.createRefreshToken(
                         user.getUsername()
                 );
 
-        // ==============================
-        // RETURN BOTH TOKENS
-        // ==============================
+
 
         return new LoginResponse(
                 accessToken,
@@ -178,25 +167,22 @@ public class AuthServiceImpl implements AuthService {
             );
         }
 
-        // Get token expiration
         Instant expiresAt =
                 jwtService.extractExpiration(token);
 
-        // Check expiration
+
         if (expiresAt.isBefore(Instant.now())) {
             throw new TokenExpiredException(
                     "JWT token has expired"
             );
         }
 
-        // Check whether token is still active
         if (!tokenStoreService.isTokenActive(token)) {
             throw new InvalidTokenException(
                     "Token has been revoked"
             );
         }
 
-        // Extract username from JWT
         String username =
                 jwtService.extractUsername(token);
 
@@ -215,15 +201,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponse refreshAccessToken(String refreshToken) {
 
-        // Validate the refresh token
         RefreshToken storedRefreshToken =
                 refreshTokenService.validateRefreshToken(refreshToken);
 
-        // Get the username from the refresh token
+
         String username =
                 jwtService.extractUsername(refreshToken);
 
-        // Get the user from PostgreSQL
+
         User user = userRepository
                 .findByUsername(username)
                 .orElseThrow(() ->
@@ -232,20 +217,20 @@ public class AuthServiceImpl implements AuthService {
                         )
                 );
 
-        // Generate a new access token
+
         String accessToken = jwtService.generateToken(
                 user.getUsername(),
                 user.getRole()
         );
 
-        // Access token issue time
+
         Instant issuedAt = Instant.now();
 
-        // Access token expiry time
+
         Instant expiresAt =
                 jwtService.extractExpiration(accessToken);
 
-        // Store new access token
+
         TokenMetadata tokenMetadata = new TokenMetadata(
                 accessToken,
                 user.getUsername(),
@@ -255,7 +240,7 @@ public class AuthServiceImpl implements AuthService {
 
         tokenStoreService.storeToken(tokenMetadata);
 
-        // Return new access token
+
         return new LoginResponse(
                 accessToken,
                 refreshToken,

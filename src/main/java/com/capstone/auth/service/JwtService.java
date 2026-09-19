@@ -28,10 +28,6 @@ public class JwtService {
             SECRET_KEY.getBytes(StandardCharsets.UTF_8)
     );
 
-    // ==========================================
-    // ACCESS TOKEN
-    // ==========================================
-
 
     public String generateToken(String username, String role) {
 
@@ -50,9 +46,6 @@ public class JwtService {
                 .compact();
     }
 
-    // ==========================================
-    // REFRESH TOKEN
-    // ==========================================
 
     public String generateRefreshToken(String username) {
 
@@ -70,9 +63,6 @@ public class JwtService {
                 .compact();
     }
 
-    // ==========================================
-    // EXTRACT USERNAME
-    // ==========================================
 
     public String extractUsername(String token) {
 
@@ -80,19 +70,12 @@ public class JwtService {
                 .getSubject();
     }
 
-    // ==========================================
-    // EXTRACT ROLE
-    // ==========================================
-
     public String extractRole(String token) {
 
         return extractClaims(token)
                 .get("role", String.class);
     }
 
-    // ==========================================
-    // EXTRACT EXPIRATION
-    // ==========================================
 
     public Instant extractExpiration(String token) {
 
@@ -100,10 +83,6 @@ public class JwtService {
                 .getExpiration()
                 .toInstant();
     }
-
-    // ==========================================
-    // CHECK TOKEN TYPE
-    // ==========================================
 
     public boolean isRefreshToken(String token) {
 
@@ -121,9 +100,6 @@ public class JwtService {
         return "access".equals(tokenType);
     }
 
-    // ==========================================
-    // VALIDATE TOKEN
-    // ==========================================
 
     public boolean isTokenValid(String token) {
 
@@ -143,9 +119,6 @@ public class JwtService {
         }
     }
 
-    // ==========================================
-    // EXTRACT CLAIMS
-    // ==========================================
 
     private Claims extractClaims(String token) {
 

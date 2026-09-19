@@ -36,11 +36,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // Get Authorization header
+
         String authorizationHeader =
                 request.getHeader("Authorization");
 
-        // If there is no Bearer token, continue the filter chain
+
         if (authorizationHeader == null
                 || !authorizationHeader.startsWith("Bearer ")) {
 
@@ -48,15 +48,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // Extract token
+
         String token =
                 authorizationHeader.substring(7);
 
         try {
 
-            // =====================================================
-            // 1. CHECK JWT VALIDITY
-            // =====================================================
 
             if (!jwtService.isTokenValid(token)) {
 
@@ -69,9 +66,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
 
-            // =====================================================
-            // 2. MAKE SURE IT IS AN ACCESS TOKEN
-            // =====================================================
 
             if (!jwtService.isAccessToken(token)) {
 
@@ -84,9 +78,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
 
-            // =====================================================
-            // 3. CHECK WHETHER ACCESS TOKEN IS ACTIVE
-            // =====================================================
+
 
             if (!tokenStoreService.isTokenActive(token)) {
 
@@ -99,9 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
 
-            // =====================================================
-            // 4. EXTRACT USERNAME AND ROLE
-            // =====================================================
+
 
             String username =
                     jwtService.extractUsername(token);
@@ -109,10 +99,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String role =
                     jwtService.extractRole(token);
 
-
-            // =====================================================
-            // 5. CHECK ROLE
-            // =====================================================
 
             if (role == null || role.isBlank()) {
 
@@ -125,9 +111,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
 
-            // =====================================================
-            // 6. CREATE SPRING SECURITY AUTHENTICATION
-            // =====================================================
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
@@ -141,26 +124,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     );
 
 
-            // =====================================================
-            // 7. STORE AUTHENTICATION IN SECURITY CONTEXT
-            // =====================================================
 
             SecurityContextHolder
                     .getContext()
                     .setAuthentication(authentication);
 
 
-            // =====================================================
-            // 8. CONTINUE REQUEST
-            // =====================================================
-
             filterChain.doFilter(request, response);
 
         }
 
-        // =========================================================
-        // JWT EXPIRED
-        // =========================================================
 
         catch (io.jsonwebtoken.ExpiredJwtException exception) {
 
@@ -172,9 +145,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             );
         }
 
-        // =========================================================
-        // ANY OTHER JWT ERROR
-        // =========================================================
 
         catch (Exception exception) {
 
@@ -187,10 +157,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-
-    // =============================================================
-    // SEND 401 RESPONSE
-    // =============================================================
 
     private void sendUnauthorized(
             HttpServletResponse response,

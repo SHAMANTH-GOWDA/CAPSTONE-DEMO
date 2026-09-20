@@ -46,6 +46,7 @@
                 %d{yyyy-MM-dd HH:mm:ss.SSS}
                 %-5level
                 [%thread]
+                [UA: %X{userAgent:-NONE}]
                 %logger{36}
                 -
                 %msg%n

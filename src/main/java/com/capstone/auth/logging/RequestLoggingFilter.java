@@ -4,6 +4,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import nl.basjes.parse.useragent.UserAgentAnalyzer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,6 +20,8 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
     private static final Logger logger =
             LoggerFactory.getLogger(RequestLoggingFilter.class);
 
+
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -29,12 +34,17 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         String method = request.getMethod();
         String uri = request.getRequestURI();
         String clientIp = request.getRemoteAddr();
+        String deviceId = request.getHeader("X-Device-Id");
+        String userAgent = request.getHeader("User-Agent");
+
 
         logger.info(
-                "REQUEST | method={} | uri={} | clientIp={}",
+                "REQUEST | method={} | uri={} | clientIp={} | deviceId={} | userAgent={}",
                 method,
                 uri,
-                clientIp
+                clientIp,
+                deviceId,
+                userAgent
         );
 
         try {

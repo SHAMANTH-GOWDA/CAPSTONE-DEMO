@@ -27,9 +27,9 @@ public class DataInitializer {
                 userRepository.save(admin);
             }
 
-            if (userRepository.findByUsername("user").isEmpty()) {
+            if (userRepository.findByUsername("user1").isEmpty()) {
                 User user = new User(
-                        "user",
+                        "user1",
                         passwordEncoder.encode("user123"),
                         "USER"
                 );

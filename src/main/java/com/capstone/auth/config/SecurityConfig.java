@@ -5,6 +5,7 @@ import com.capstone.auth.security.RateLimiterFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -76,7 +78,7 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/api/login","api/signup").permitAll()
 
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
@@ -84,10 +86,10 @@ public class SecurityConfig {
                         .requestMatchers("/user/**")
                         .hasRole("USER")
 
-                        .requestMatchers("/auth", "/logout")
+                        .requestMatchers("/api/auth", "/api/logout")
                         .authenticated()
 
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
 
                 .exceptionHandling(exception ->

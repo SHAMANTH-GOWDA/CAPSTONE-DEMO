@@ -46,21 +46,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token =
                 authorizationHeader.substring(7);
-
         try {
 
-
             if (!jwtService.isTokenValid(token)) {
-
                 sendUnauthorized(
                         response,
                         "Invalid or expired JWT token"
                 );
-
                 return;
             }
-
-
 
             if (!jwtService.isAccessToken(token)) {
 
@@ -73,8 +67,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
 
-
-
             if (!tokenStoreService.isTokenActive(token)) {
 
                 sendUnauthorized(
@@ -85,15 +77,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
+            String username = jwtService.extractUsername(token);
 
-
-
-            String username =
-                    jwtService.extractUsername(token);
-
-            String role =
-                    jwtService.extractRole(token);
-
+            String role = jwtService.extractRole(token);
 
             if (role == null || role.isBlank()) {
 
@@ -105,7 +91,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-
+            role = role.toUpperCase();
 
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
@@ -118,17 +104,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             )
                     );
 
-
-
             SecurityContextHolder
                     .getContext()
                     .setAuthentication(authentication);
 
-
             filterChain.doFilter(request, response);
 
         }
-
 
         catch (io.jsonwebtoken.ExpiredJwtException exception) {
 
@@ -139,7 +121,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     "JWT token has expired"
             );
         }
-
 
         catch (Exception exception) {
 

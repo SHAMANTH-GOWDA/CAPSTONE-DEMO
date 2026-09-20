@@ -174,7 +174,7 @@ public class GlobalExceptionHandler {
 
         ApiErrorResponse error = new ApiErrorResponse("An unexpected error occurred");
         return ResponseEntity
-                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(error);
     }
 

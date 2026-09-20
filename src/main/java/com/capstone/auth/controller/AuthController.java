@@ -5,8 +5,8 @@ import com.capstone.auth.dto.request.RefreshTokenRequest;
 import com.capstone.auth.dto.request.SignupRequest;
 import com.capstone.auth.dto.response.AuthValidationResponse;
 import com.capstone.auth.dto.response.LoginResponse;
+import com.capstone.auth.dto.response.UserResponse;
 import com.capstone.auth.service.AuthService;
-import com.capstone.auth.service.TokenStoreService;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,8 +15,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,7 +28,6 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final TokenStoreService tokenStoreService;
     private static final String RateLimiter = "LoginRateLimiter";
 
     // Login
@@ -38,6 +39,27 @@ public class AuthController {
         LoginResponse response = authService.authenticate(loginRequest);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup(
+            @RequestBody SignupRequest signupRequest
+    ) {
+        authService.signup(signupRequest);
+
+        return ResponseEntity.ok(
+                "User registered successfully"
+        );
+    }
+
+
+    @PostMapping("/refresh")
+    public LoginResponse refresh(
+            @RequestBody RefreshTokenRequest request
+    ) {
+        return authService.refreshAccessToken(
+                request.getRefreshToken()
+        );
     }
 
     // Validate JWT authentication
@@ -89,6 +111,7 @@ public class AuthController {
                 "User access successful"
         );
     }
+
 
     public ResponseEntity<?> LoginFallBack(LoginRequest loginRequest , RequestNotPermitted requestNotPermitted) {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(

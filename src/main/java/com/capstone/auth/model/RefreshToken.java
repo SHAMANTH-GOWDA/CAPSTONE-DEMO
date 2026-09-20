@@ -1,9 +1,12 @@
 package com.capstone.auth.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
+@Getter
 @Entity
 @Table(name = "refresh_tokens")
 public class RefreshToken {
@@ -21,6 +24,7 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expiresAt;
 
+    @Setter
     @Column(nullable = false)
     private boolean revoked = false;
 
@@ -38,27 +42,4 @@ public class RefreshToken {
         this.revoked = false;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public Instant getExpiresAt() {
-        return expiresAt;
-    }
-
-    public boolean isRevoked() {
-        return revoked;
-    }
-
-    public void setRevoked(boolean revoked) {
-        this.revoked = revoked;
-    }
 }
